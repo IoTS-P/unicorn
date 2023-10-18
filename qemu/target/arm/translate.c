@@ -11694,21 +11694,29 @@ static void arm_tr_tb_stop(DisasContextBase *dcbase, CPUState *cpu)
             break;
         case DISAS_WFI:
         {
-            gen_set_pc_im(dc, dc->base.pc_next);
+            // We don't want the execution to halt upon a normal WFI instruction
+            // gen_set_pc_im(dc, dc->base.pc_next);
 
-            TCGv_i32 tmp = tcg_const_i32(tcg_ctx, (dc->thumb &&
-                                          !(dc->insn & (1U << 31))) ? 2 : 4);
+            // TCGv_i32 tmp = tcg_const_i32(tcg_ctx, (dc->thumb &&
+            //                               !(dc->insn & (1U << 31))) ? 2 : 4);
 
-            gen_helper_wfi(tcg_ctx, tcg_ctx->cpu_env, tmp);
-            tcg_temp_free_i32(tcg_ctx, tmp);
-            /* The helper doesn't necessarily throw an exception, but we
-             * must go back to the main loop to check for interrupts anyway.
-             */
-            tcg_gen_exit_tb(tcg_ctx, NULL, 0);
+            // gen_helper_wfi(tcg_ctx, tcg_ctx->cpu_env, tmp);
+            // tcg_temp_free_i32(tcg_ctx, tmp);
+            // /* The helper doesn't necessarily throw an exception, but we
+            //  * must go back to the main loop to check for interrupts anyway.
+            //  */
+            // tcg_gen_exit_tb(tcg_ctx, NULL, 0);
+            // write something to file 
+            // FILE *fp = fopen("/home/shandian/uEmu/debug_qemu.txt", "a");
+            // char buf[1024] = "WFI";
+            // sprintf(buf, "WFI\n");
+            // fwrite(buf, 1, strlen(buf), fp);
+            // fclose(fp);
             break;
         }
         case DISAS_WFE:
-            gen_helper_wfe(tcg_ctx, tcg_ctx->cpu_env);
+            // We don't want the execution to halt upon a normal WFE instruction
+            // gen_helper_wfe(tcg_ctx, tcg_ctx->cpu_env);
             break;
         case DISAS_YIELD:
             gen_helper_yield(tcg_ctx, tcg_ctx->cpu_env);
