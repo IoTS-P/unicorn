@@ -9299,8 +9299,13 @@ static bool op_strex(DisasContext *s, arg_STREX *a, MemOp mop, bool rel)
             && (a->rt2 == 15
                 || a->rd == a->rt2
                 || (!v8a && s->thumb && a->rt2 == 13)))) {
-        unallocated_encoding(s);
-        return true;
+        
+        if (a->rd == a->rt){
+            ; // just fix GPSTracker strex r3,r3,[r6]
+        }else{
+            unallocated_encoding(s);
+            return true;
+        }
     }
 
     if (rel) {
