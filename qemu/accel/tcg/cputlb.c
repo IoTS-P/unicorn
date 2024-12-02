@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-
+// #include<stdio.h>
 #include "qemu/osdep.h"
 #include "cpu.h"
 #include "exec/exec-all.h"
@@ -1419,6 +1419,9 @@ load_helper(CPUArchState *env, target_ulong addr, TCGMemOpIdx oi,
             uintptr_t retaddr, MemOp op, bool code_read,
             FullLoadHelper *full_load)
 {
+    // FILE *fp = fopen("/home/shandian/debug.txt", "a+");
+    // fprintf(fp, "ssd load_helper, addr = %lx, oi = %lx, retaddr = %lx, op = %d, code_read = %d\n", addr, oi, retaddr, op, code_read);
+    // fclose(fp);
     uintptr_t mmu_idx = get_mmuidx(oi);
     uintptr_t index = tlb_index(env, mmu_idx, addr);
     CPUTLBEntry *entry = tlb_entry(env, mmu_idx, addr);
@@ -1511,7 +1514,11 @@ load_helper(CPUArchState *env, target_ulong addr, TCGMemOpIdx oi,
             if (!HOOK_BOUND_CHECK(hook, addr))
                 continue;
             ((uc_cb_hookmem_t)hook->callback)(env->uc, UC_MEM_READ, addr, size, 0, hook->user_data);
-
+            // 为了解决返回之后不知道为什么entry被覆盖的问题，这里加了一个entry重写
+            tlb_fill(env_cpu(env), addr, size,
+                     access_type, mmu_idx, retaddr);
+            index = tlb_index(env, mmu_idx, addr);
+            entry = tlb_entry(env, mmu_idx, addr);
             // the last callback may already asked to stop emulation
             if (uc->stop_request)
                 break;
